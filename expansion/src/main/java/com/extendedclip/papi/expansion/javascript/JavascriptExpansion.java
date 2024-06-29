@@ -20,10 +20,14 @@
  */
 package com.extendedclip.papi.expansion.javascript;
 
-import com.extendedclip.papi.expansion.javascript.cloud.*;
+import com.extendedclip.papi.expansion.javascript.cloud.GitScriptManager;
 import com.extendedclip.papi.expansion.javascript.commands.router.CommandRegistrar;
-import com.extendedclip.papi.expansion.javascript.config.*;
-import com.extendedclip.papi.expansion.javascript.evaluator.*;
+import com.extendedclip.papi.expansion.javascript.config.HeaderWriter;
+import com.extendedclip.papi.expansion.javascript.config.ScriptConfiguration;
+import com.extendedclip.papi.expansion.javascript.config.YamlScriptConfiguration;
+import com.extendedclip.papi.expansion.javascript.evaluator.NashornScriptEvaluatorFactory;
+import com.extendedclip.papi.expansion.javascript.evaluator.QuickJsScriptEvaluatorFactory;
+import com.extendedclip.papi.expansion.javascript.evaluator.ScriptEvaluatorFactory;
 import com.extendedclip.papi.expansion.javascript.script.ConfigurationScriptLoader;
 import com.extendedclip.papi.expansion.javascript.script.ScriptLoader;
 import com.extendedclip.papi.expansion.javascript.script.ScriptRegistry;
@@ -40,7 +44,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class JavascriptExpansion extends PlaceholderExpansion implements Cacheable, Configurable {

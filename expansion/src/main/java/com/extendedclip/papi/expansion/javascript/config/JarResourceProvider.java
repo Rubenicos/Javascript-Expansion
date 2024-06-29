@@ -1,16 +1,12 @@
 package com.extendedclip.papi.expansion.javascript.config;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.function.Function;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;

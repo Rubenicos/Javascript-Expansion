@@ -5,8 +5,11 @@ import com.extendedclip.papi.expansion.javascript.cloud.GitScript;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.channels.*;
-import java.nio.file.*;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public final class ChanneledScriptDownloader implements ScriptDownloader {
     private final PathSelector pathSelector;

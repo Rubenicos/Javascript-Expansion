@@ -1,6 +1,5 @@
 package com.extendedclip.papi.expansion.javascript.commands.router;
 
-import com.extendedclip.papi.expansion.javascript.ExpansionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -8,7 +7,10 @@ import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class CommandRouter extends Command {

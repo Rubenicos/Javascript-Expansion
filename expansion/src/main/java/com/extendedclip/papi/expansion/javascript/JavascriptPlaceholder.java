@@ -21,29 +21,21 @@
 package com.extendedclip.papi.expansion.javascript;
 
 
-
 import com.extendedclip.papi.expansion.javascript.evaluator.ScriptEvaluator;
 import com.extendedclip.papi.expansion.javascript.evaluator.ScriptEvaluatorFactory;
 import com.extendedclip.papi.expansion.javascript.script.ScriptData;
 import com.extendedclip.papi.expansion.javascript.script.data.PersistableData;
 import com.extendedclip.papi.expansion.javascript.script.data.YmlPersistableData;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.PlaceholderAPIPlugin;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import javax.script.ScriptException;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
