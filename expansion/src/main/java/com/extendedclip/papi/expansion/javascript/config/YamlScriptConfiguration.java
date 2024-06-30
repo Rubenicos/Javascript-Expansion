@@ -57,6 +57,11 @@ public final class YamlScriptConfiguration implements ScriptConfiguration {
     }
 
     @Override
+    public @Nullable ConfigurationSection getConfig(@NotNull String scriptName) {
+        return fileConfiguration.getConfigurationSection(scriptName);
+    }
+
+    @Override
     public void setPath(@NotNull final String scriptName, @Nullable final String name) {
         final String key = scriptName + ".file";
         fileConfiguration.set(key, name);

@@ -26,9 +26,11 @@ import com.extendedclip.papi.expansion.javascript.evaluator.ScriptEvaluatorFacto
 import com.extendedclip.papi.expansion.javascript.script.ScriptData;
 import com.extendedclip.papi.expansion.javascript.script.data.PersistableData;
 import com.extendedclip.papi.expansion.javascript.script.data.YmlPersistableData;
+import com.google.common.cache.CacheBuilder;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import javax.script.ScriptException;
@@ -36,16 +38,25 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class JavascriptPlaceholder {
+    private static final UUID DUMMY_ID = new UUID(0, 0);
+
     private final String identifier;
     private final String script;
     private final PersistableData persistableData;
     private final Pattern pattern = Pattern.compile("//.*|/\\*[\\S\\s]*?\\*/|%([^%]+)%");
     private final ScriptEvaluatorFactory evaluatorFactory;
     private final JavascriptExpansion expansion;
+
+    private Map<UUID, Map<String, String>> cache;
+    private Long cacheDuration;
+    private TimeUnit cacheUnit;
 
     public JavascriptPlaceholder(@NotNull final String identifier, @NotNull final String script, @NotNull final ScriptEvaluatorFactory evaluatorFactory, @NotNull final JavascriptExpansion expansion) {
         final Path dataFilePath = expansion.getPlaceholderAPI().getDataFolder()
@@ -66,11 +77,56 @@ public final class JavascriptPlaceholder {
         this.expansion = expansion;
     }
 
+    public void load(@NotNull final ConfigurationSection config) {
+        if (config.isSet("cache")) {
+            final String s = config.getString("cache", "");
+            final String[] cache = s.split(" ", 2);
+            if (cache.length > 1) {
+                this.cache = new ConcurrentHashMap<>();
+                try {
+                    this.cacheDuration = Long.parseLong(cache[0]);
+                    this.cacheUnit = TimeUnit.valueOf(cache[1].toUpperCase());
+                } catch (Exception exception) {
+                    ExpansionUtils.errorLog("The text '" + s + "' is not a valid time configuration", exception);
+                }
+            } else if (s.equals("STATIC")) {
+                this.cache = new ConcurrentHashMap<>();
+                this.cacheDuration = 0L;
+            } else {
+                throw new IllegalArgumentException("The text '" + s + "' is not a valid time configuration");
+            }
+        }
+    }
+
     public String getIdentifier() {
         return identifier;
     }
 
     public String evaluate(final OfflinePlayer player, final String... args) {
+        final String key;
+        if (cacheDuration != null) {
+            key = args == null ? "" : String.join("_", args);
+            Map<String, String> map;
+            if (cacheDuration == 0 || player == null) {
+                map = cache.get(DUMMY_ID);
+                if (map == null) {
+                    cache.put(DUMMY_ID, new HashMap<>());
+                }
+            } else {
+                map = cache.get(player.getUniqueId());
+                if (map == null) {
+                    cache.put(player.getUniqueId(), CacheBuilder.newBuilder().expireAfterWrite(cacheDuration, cacheUnit).<String, String>build().asMap());
+                }
+            }
+            if (map != null) {
+                final String result = map.get(key);
+                if (result != null) {
+                    return result;
+                }
+            }
+        } else {
+            key = null;
+        }
         // A checker to deny all placeholders inside comment codes
         final Matcher matcher = pattern.matcher(script);
         final StringBuffer buffer = new StringBuffer();
@@ -110,7 +166,12 @@ public final class JavascriptPlaceholder {
             additionalBindings.put("OfflinePlayer", player);
             try {
                 Object result = evaluator.execute(additionalBindings, parsedScript);
-                return result != null ? PlaceholderAPI.setBracketPlaceholders(player, result.toString()) : "";
+                result = result != null ? PlaceholderAPI.setBracketPlaceholders(player, result.toString()) : "";
+                if (cacheDuration != null) {
+                    final UUID uniqueId = cacheDuration == 0 || player == null ? DUMMY_ID : player.getUniqueId();
+                    cache.get(uniqueId).put(key, (String) result);
+                }
+                return (String) result;
             } catch (RuntimeException | ScriptException exception) { // todo:: prepare specific exception and catch that instead of all runtime exceptions
                 ExpansionUtils.errorLog("An error occurred while executing the script '" + identifier , exception);
             }

@@ -3,6 +3,7 @@ package com.extendedclip.papi.expansion.javascript.script;
 import com.extendedclip.papi.expansion.javascript.JavascriptPlaceholder;
 import com.extendedclip.papi.expansion.javascript.JavascriptPlaceholderFactory;
 import com.extendedclip.papi.expansion.javascript.config.ScriptConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +36,10 @@ public final class ConfigurationScriptLoader implements ScriptLoader {
             }
             final String script = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
             final JavascriptPlaceholder placeholder = placeholderFactory.create(scriptIdentifier, script);
+            final ConfigurationSection config = configuration.getConfig(scriptIdentifier);
+            if (config != null) {
+                placeholder.load(config);
+            }
             registry.register(placeholder);
             loaded++;
         }

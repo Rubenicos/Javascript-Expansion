@@ -1,5 +1,6 @@
 package com.extendedclip.papi.expansion.javascript.config;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +11,9 @@ import java.util.Map;
 public interface ScriptConfiguration {
     @Nullable
     Path getPath(@NotNull String scriptName);
+
+    @Nullable
+    ConfigurationSection getConfig(@NotNull String scriptName);
 
     void setPath(@NotNull String scriptName, @Nullable final String name);
 
